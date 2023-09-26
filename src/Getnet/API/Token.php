@@ -11,9 +11,9 @@ class Token
 
     public $number_token;
 
-    private $card_number;
+    protected $card_number;
 
-    private $customer_id;
+    protected $customer_id;
 
     /**
      * Token constructor.
@@ -22,11 +22,14 @@ class Token
      * @param string $customer_id
      * @param Getnet $credencial
      */
-    public function __construct($card_number, $customer_id, Getnet $credencial)
+    public function __construct($card_number, $customer_id, Getnet $credencial = null)
     {
         $this->setCardNumber($card_number);
         $this->setCustomerId($customer_id);
-        $this->setNumberToken($credencial);
+        
+        if ($credencial) {
+            $this->setNumberToken($credencial);
+        }
     }
 
     /**
@@ -89,6 +92,11 @@ class Token
         return $this->number_token;
     }
 
+    /**
+     * 
+     * @deprecated
+     * Remove in next major version
+     */
     public function setNumberToken(Getnet $credencial)
     {
         $data = array(

@@ -133,9 +133,9 @@ class Card implements \JsonSerializable
 
     /**
      *
-     * @param mixed $token
+     * @param Token $token
      */
-    public function setNumberToken($token)
+    public function setNumberToken(Token $token)
     {
         $this->number_token = (string) $token->getNumberToken();
 

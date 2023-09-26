@@ -59,8 +59,12 @@ $transaction->order("123456")
 ->setProductType(Order::PRODUCT_TYPE_SERVICE)
 ->setSalesTax(0);
 
-// Gera token do cartão - Obrigatório
+// Gera token do cartão
 $tokenCard = new Token("5155901222280001", "customer_210818263", $getnet);
+
+// Ou para usar um cartão já tokenizado que está salvo
+// $tokenCard = new \Getnet\API\CardToken('Pass your card token');
+
 
 // Dados do método de pagamento do comprador
 $transaction->credit()
