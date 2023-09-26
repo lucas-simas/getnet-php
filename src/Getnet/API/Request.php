@@ -19,20 +19,21 @@ class Request
      */
     private $baseUrl = '';
 
-    const CURL_TYPE_AUTH = "AUTH";
+    public const CURL_TYPE_AUTH = "AUTH";
 
-    const CURL_TYPE_POST = "POST";
+    public const CURL_TYPE_POST = "POST";
 
-    const CURL_TYPE_PUT = "PUT";
+    public const CURL_TYPE_PUT = "PUT";
 
-    const CURL_TYPE_GET = "GET";
+    public const CURL_TYPE_GET = "GET";
 
-    const CURL_TYPE_DELETE = "DELETE";
+    public const CURL_TYPE_DELETE = "DELETE";
 
     /**
      * Request constructor.
      *
      * @param Getnet $credentials
+     * TODO create local variable to $credentials
      */
     public function __construct(Getnet $credentials)
     {
@@ -271,5 +272,21 @@ class Request
     public function delete(Getnet $credentials, $url_path)
     {
         return $this->send($credentials, $url_path, self::CURL_TYPE_DELETE);
+    }
+    
+    public function custom(Getnet $credentials, string $method, string $url_path, $body = null)
+    {
+        
+        if (!in_array($method, [
+            self::CURL_TYPE_AUTH,
+            self::CURL_TYPE_POST,
+            self::CURL_TYPE_PUT,
+            self::CURL_TYPE_GET,
+            self::CURL_TYPE_DELETE
+        ])) {
+            throw new GetnetException("Invalid request method: {$method}");
+        }
+        
+        return $this->send($credentials, $url_path, $method, $body);
     }
 }

@@ -385,6 +385,13 @@ class Getnet
         }
     }
     
+    public function customRequest(string $method, string $url_path, $body = null)
+    {
+        $request = new Request($this);
+        
+        return $request->custom($this, $method, $url_path, $body);
+    }
+    
     /**
      * 
      * @param \Exception $e
