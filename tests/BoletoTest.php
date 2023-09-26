@@ -29,10 +29,7 @@ final class BoletoTest extends TestBase
             throw new \Exception($response->getResponseJSON());
         }
 
-        // TODO
-        $this->assertSame(Transaction::STATUS_PENDING, $response->status, $response->getResponseJSON());
-        $this->assertSame('EM ABERTO', $response->getStatus(), $response->getResponseJSON());
-        
+        $this->assertSame(Transaction::STATUS_PENDING, $response->getStatus(), $response->getResponseJSON());
         $this->assertSame($transaction->getOrder()->getOrderId(), $response->getOrderId());
         $this->assertNotEmpty($response->getPaymentId());
         $this->assertNotEmpty($response->getBoletoId());
