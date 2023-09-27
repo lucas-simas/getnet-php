@@ -31,16 +31,59 @@ class Card implements \JsonSerializable
     private $number_token;
 
     private $security_code;
+    
+    // Cofre fields
+    private $customer_id;
+
+    private $cardholder_identification;
+    
+    private $verify_card;
+    
+    private $card_id;
+
+    private $last_four_digits;
+
+    private $bin;
+
+    private $status;
+
+    private $transaction_id;
+
+    private $used_at;
+    
+    private $created_at;
+
+    private $updated_at;
 
     /**
      * Card constructor.
      *
      * @param Token $token
      */
-    public function __construct(Token $token)
+    public function __construct(Token $token = null)
     {
-        $this->setNumberToken($token);
+        if ($token) {
+            $this->setNumberToken($token);
+        }
     }
+    
+    // Hidden info from saved card
+    public function beforeSerialize()
+    {
+        $this->customer_id = null;
+        $this->cardholder_identification = null;
+        $this->verify_card = null;
+        $this->card_id = null;
+        $this->last_four_digits = null;
+        $this->bin = null;
+        $this->status = null;
+        $this->transaction_id = null;
+        $this->used_at = null;
+        $this->created_at = null;
+        $this->updated_at = null;
+    }
+    
+    // Gets and sets
 
     /**
      *
@@ -134,6 +177,7 @@ class Card implements \JsonSerializable
     /**
      *
      * @param Token $token
+     * TODO maybe remove entity Token
      */
     public function setNumberToken(Token $token)
     {
@@ -161,4 +205,86 @@ class Card implements \JsonSerializable
 
         return $this;
     }
+    
+    // Cofre fields
+    public function getCustomerId()
+    {
+        return $this->customer_id;
+    }
+
+    public function setCustomerId($customer_id)
+    {
+        $this->customer_id = $customer_id;
+        
+        return $this;
+    }
+
+    public function getCardholderIdentification()
+    {
+        return $this->cardholder_identification;
+    }
+
+    public function setCardholderIdentification($cardholder_identification)
+    {
+        $this->cardholder_identification = $cardholder_identification;
+        
+        return $this;
+    }
+
+    public function getVerifyCard()
+    {
+        return $this->verify_card;
+    }
+
+    /**
+     * 
+     * @param bool $verify_card
+     */
+    public function setVerifyCard($verify_card)
+    {
+        $this->verify_card = $verify_card;
+        
+        return $this;
+    }
+
+    public function getCardId()
+    {
+        return $this->card_id;
+    }
+
+    public function getLastFourDigits()
+    {
+        return $this->last_four_digits;
+    }
+
+    public function getBin()
+    {
+        return $this->bin;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function getTransactionId()
+    {
+        return $this->transaction_id;
+    }
+
+    public function getUsedAt()
+    {
+        return $this->used_at;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt()
+    {
+        return $this->updated_at;
+    }
+
 }

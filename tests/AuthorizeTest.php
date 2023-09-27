@@ -80,7 +80,7 @@ final class AuthorizeTest extends TestBase
         $transaction = $this->generateMockTransaction();
         $transaction->setAmount(857.96);
         
-        $cardToken = new \Getnet\API\CardToken(self::$CARD_TOKEN);
+        $cardToken = new \Getnet\API\Entity\CardToken(self::$CARD_TOKEN);
         
         // Add payment
         $transaction->credit()
