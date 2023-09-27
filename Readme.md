@@ -79,7 +79,7 @@ $transaction->credit()
             ->card($tokenCard)
                 ->setBrand(Card::BRAND_MASTERCARD)
                 ->setExpirationMonth("12")
-                ->setExpirationYear("20")
+                ->setExpirationYear("30")
                 ->setCardholderName("Jax Teller")
                 ->setSecurityCode("123");
 
@@ -192,7 +192,7 @@ $transaction->debit()
             ->card($tokenCard)
                 ->setBrand(Card::BRAND_MASTERCARD)
                 ->setExpirationMonth("12")
-                ->setExpirationYear("20")
+                ->setExpirationYear("30")
                 ->setCardholderName("Jax Teller")
                 ->setSecurityCode("123");
 
@@ -282,10 +282,10 @@ $customer_id = 'customer_210818263';
 $cardService = new \Getnet\API\Service\CardService($getnet);
 $cardToken = $cardService->generateCardToken($card_number, $customer_id);
 
-$card = new  Card($cardToken);
+$card = new Card($cardToken);
 $card->setBrand(Card::BRAND_MASTERCARD)
     ->setExpirationMonth("12")
-    ->setExpirationYear(date('y') + 1)
+    ->setExpirationYear("30")
     ->setCardholderName("Jax Teller")
     ->setSecurityCode("123")
     ->setCustomerId($customer_id);
@@ -307,7 +307,7 @@ $delete = $cardService->deleteCard($saveCard->getCardId());
 #### BUSCAR E USAR CARTÃO SALVO NO COFRE
 
 ```php
-$cardService = new  \Getnet\API\Service\CardService($getnet);
+$cardService = new \Getnet\API\Service\CardService($getnet);
 $card = $cardService->getCard("pass-card-id");
 
 

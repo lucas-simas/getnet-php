@@ -1,6 +1,4 @@
 <?php
-use Getnet\API\Token;
-
 require_once '../config/bootstrap.test.php';
 
 //Autenticação da API
@@ -10,33 +8,37 @@ $getnet = getnetServiceTest();
 $response = $getnet->customRequest('GET', '/v1/customers?page=1&limit=5');
 print_r($response['customers']);
 
-$customer_id = 'customer_210818263';
 
-// Generate card Token
-$tokenCard = new Token("5155901222280001", $customer_id, $getnet);
-
-// Save card Token
-$cardResponse = $getnet->customRequest('POST', '/v1/cards', [
-    "number_token" => $tokenCard->getNumberToken(),
-    "brand" => "Mastercard",
-    "cardholder_name" => "JOAO DA SILVA",
-    "expiration_month" => "12",
-    "expiration_year" => "30",
-    "customer_id" => $customer_id,
-    "cardholder_identification" => "12345678912",
-    "verify_card" => false,
-    "security_code" => "123"
+// Crerate payment link
+$linkResponse = $getnet->customRequest('POST', '/v1/payment-links', [
+    "label" => "carrinho1",
+    "expiration" => "2028-12-30T13:18:27.232Z",
+    "max_orders" => 1,
+    "order" => [
+        "product_type" => "cash_carry",
+        "title" => "test product",
+        "description" => "description test",
+        "order_prefix" => "test",
+        "shipping_amount" => 0,
+        "amount" => 10000
+    ],
+    "payment" => [
+        "credit" => [
+            "enable" => true,
+            "max_installments" => 5
+        ],
+        "debit" => [
+            "enable" => false
+        ]
+    ]
+    
 ]);
-print_r($cardResponse['card_id'], $cardResponse['number_token']);
 
-// Get card token by card_id
-$response = $getnet->customRequest('GET', "/v1/cards/{$cardResponse['card_id']}");
-print_r($response);
+print_r($linkResponse);
 
-// List card token by customer
-$response = $getnet->customRequest('GET', "/v1/cards?customer_id=$customer_id");
-print_r($response['cards']);
 
-// Delete card token by card_id
-$response = $getnet->customRequest('DELETE', "/v1/cards/{$cardResponse['card_id']}");
-print_r($response['status_code'] === 204);
+// Get payment link
+$link = $getnet->customRequest('GET', "/v1/payment-links/{$linkResponse['link_id']}");
+print_r($link);
+
+// See all in https://developers.getnet.com.br/api#tag/GetPay
