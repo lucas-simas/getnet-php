@@ -4,29 +4,17 @@ namespace Getnet\API;
 trait TraitEntity
 {
 
-    /**
-     *
-     * @return mixed
-     */
     public function jsonSerialize()
     {
         $entity = clone $this;
-        
-        if(method_exists($entity, 'beforeSerialize')){
+
+        if (method_exists($entity, 'beforeSerialize')) {
             $entity->beforeSerialize();
         }
-        
-        $vars = get_object_vars($entity);
-        
-        if ($this->hiddenNullValues()) {
-            return array_filter($vars, function ($value) {
-                return null !== $value;
-            });
-        }
-        
-        return $vars;
-    }
 
+        return $entity->toArray();
+    }
+        
     /**
      *
      * @return array
