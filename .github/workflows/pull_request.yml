@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -37,7 +37,7 @@ jobs:
         run: echo "::set-output name=directory::$(composer config cache-dir)"
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
           key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
@@ -54,7 +54,11 @@ jobs:
         run: composer phpstan
 
       - name: PHPUnit tests
-        run: composer phpunit
+        run: composer test:unit
+
+      - name: PHPUnit e2e tests
+        if: ${{ vars.RUN_TESTS_E2E == 'true' }}
+        run: composer test:e2e
 
       - name: Remove temp files
         run: rm -f $GITHUB_WORKSPACE/auth.json, $GITHUB_WORKSPACE/config/env.test.php

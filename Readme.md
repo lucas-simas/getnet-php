@@ -59,8 +59,12 @@ $transaction->order("123456")
 ->setProductType(Order::PRODUCT_TYPE_SERVICE)
 ->setSalesTax(0);
 
-// Gera token do cartão - Obrigatório
+// Gera token do cartão
 $tokenCard = new Token("5155901222280001", "customer_210818263", $getnet);
+
+// Ou para usar um cartão já tokenizado que está salvo
+// $tokenCard = new \Getnet\API\Entity\CardToken('Pass your card token');
+
 
 // Dados do método de pagamento do comprador
 $transaction->credit()
@@ -75,7 +79,7 @@ $transaction->credit()
             ->card($tokenCard)
                 ->setBrand(Card::BRAND_MASTERCARD)
                 ->setExpirationMonth("12")
-                ->setExpirationYear("20")
+                ->setExpirationYear("30")
                 ->setCardholderName("Jax Teller")
                 ->setSecurityCode("123");
 
@@ -188,7 +192,7 @@ $transaction->debit()
             ->card($tokenCard)
                 ->setBrand(Card::BRAND_MASTERCARD)
                 ->setExpirationMonth("12")
-                ->setExpirationYear("20")
+                ->setExpirationYear("30")
                 ->setCardholderName("Jax Teller")
                 ->setSecurityCode("123");
 
@@ -263,6 +267,73 @@ $response = $getnet->boleto($transaction);
 
 // Resultado da transação - Consultar tabela abaixo
 $response->getStatus();
+```
+
+#### SALVAR CARTÃO NO COFRE
+
+```php
+//Autenticação da API
+$getnet = new Getnet($client_id, $client_secret, $environment, $keySession);
+
+$card_number = '5155901222280001';
+$customer_id = 'customer_210818263';
+
+// Generate token
+$cardService = new \Getnet\API\Service\CardService($getnet);
+$cardToken = $cardService->generateCardToken($card_number, $customer_id);
+
+$card = new Card($cardToken);
+$card->setBrand(Card::BRAND_MASTERCARD)
+    ->setExpirationMonth("12")
+    ->setExpirationYear("30")
+    ->setCardholderName("Jax Teller")
+    ->setSecurityCode("123")
+    ->setCustomerId($customer_id);
+
+
+// Save
+$saveCard = $cardService->saveCard($card);
+
+// Get by card_id
+$savedCard = $cardService->getCard($saveCard->getCardId());
+
+// Get by customer_id
+$cards = $cardService->getCardsByCustomerId($customer_id);
+
+// Delete
+$delete = $cardService->deleteCard($saveCard->getCardId());
+```
+
+#### BUSCAR E USAR CARTÃO SALVO NO COFRE
+
+```php
+$cardService = new \Getnet\API\Service\CardService($getnet);
+$card = $cardService->getCard("pass-card-id");
+
+
+// Adicionar dados do Pagamento, atenção o SecurityCode não fica salvo
+$transaction->credit()
+            ->setAuthenticated(false)
+            ->setDynamicMcc("1799")
+            ->setSoftDescriptor("LOJA*TESTE*COMPRA-123")
+            ->setDelayed(false)
+            ->setPreAuthorization(false)
+            ->setNumberInstallments(2)
+            ->setSaveCardData(false)
+            ->setTransactionType(Credit::TRANSACTION_TYPE_INSTALL_NO_INTEREST)
+            ->setCard($card->setSecurityCode('123'));
+...
+```
+
+#### REQUESTS CUSTOMIZADOS PARA OUTROS ENDPOINTS DA API
+
+```php
+//Autenticação da API
+$getnet = new Getnet($client_id, $client_secret, $environment, $keySession);
+
+// List customers
+$response = $getnet->customRequest('GET', '/v1/customers?page=1&limit=5');
+print_r($response['customers']);
 ```
 
 ### Possíveis status de resposta de uma transação

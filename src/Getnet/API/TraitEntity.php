@@ -4,10 +4,6 @@ namespace Getnet\API;
 trait TraitEntity
 {
 
-    /**
-     *
-     * @return mixed
-     */
     public function jsonSerialize()
     {
         $entity = clone $this;
@@ -18,7 +14,7 @@ trait TraitEntity
 
         return $entity->toArray();
     }
-
+        
     /**
      *
      * @return array
@@ -49,10 +45,17 @@ trait TraitEntity
         return json_encode(get_object_vars($this));
     }
 
-    /**
-     *
-     * @return bool
-     */
+    public function populateByArray(array $body, array $blockFields = [])
+    {
+        foreach ($body as $prop => $value) {
+            if (property_exists($this, $prop) && null !== $value && !in_array($prop, $blockFields)) {
+                $this->{$prop} = $value;
+            }
+        }
+        
+        return $this;
+    }
+
     private function hiddenNullValues(): bool
     {
         return true;
