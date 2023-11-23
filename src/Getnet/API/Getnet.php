@@ -331,6 +331,25 @@ class Getnet
     }
 
     /**
+     * Retorna os dados da solicitação de cancelamento pela chave gerada pelo cliente ou pelo identificador (D+n).
+     *
+     * @return AuthorizeResponse|BaseResponse
+     */
+    public function getCancellationRequest(string $cancelRequestId)
+    {
+        try {
+            $request = new Request($this);
+            $response = $request->get($this, "/v1/payments/cancel/request/" . $cancelRequestId);
+            $authresponse = new AuthorizeResponse();
+            $authresponse->mapperJson($response);
+            
+            return $authresponse;
+        } catch (\Exception $e) {
+            return $this->generateErrorResponse($e);
+        }
+    }
+
+    /**
      *
      * @param Transaction $transaction
      * @return BaseResponse|BoletoRespose

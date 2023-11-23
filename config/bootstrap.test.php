@@ -1,5 +1,4 @@
 <?php
-use Getnet\API\Getnet;
 use Getnet\API\Environment;
 
 $ROOTDIR = dirname(__DIR__);
@@ -11,12 +10,12 @@ require_once $ROOTDIR . '/config/env.test.php';
 
 /**
  *
- * @return Getnet
+ * @return \Getnet\API\Getnet
  * @throws Exception
  */
 function getnetServiceTest()
 {
-    $getnet = new Getnet(getenv('GETNET_CLIENT_ID'), getenv('GETNET_CLIENT_SECRET'), Environment::sandbox());
+    $getnet = new \Getnet\API\Getnet(getenv('GETNET_CLIENT_ID'), getenv('GETNET_CLIENT_SECRET'), Environment::sandbox());
 
     $getnet->setSellerId(getenv('GETNET_SELLER_ID'));
 
