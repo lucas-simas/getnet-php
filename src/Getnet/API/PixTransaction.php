@@ -34,7 +34,7 @@ class PixTransaction implements \JsonSerializable
 
     public function setAmount($amount)
     {
-        $this->amount = (int) ($amount * 100);
+        $this->amount = (int) (string) ($amount * 100);
 
         return $this;
     }
