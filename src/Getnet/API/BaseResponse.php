@@ -43,7 +43,7 @@ class BaseResponse implements \JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return get_object_vars($this);
     }
@@ -272,7 +272,7 @@ class BaseResponse implements \JsonSerializable
             $this->status = Transaction::STATUS_ERROR;
         } elseif ($this->status_code == 500) {
             $this->status = Transaction::STATUS_ERROR;
-        } elseif ($this->status_code == 1 || isset($this->redirect_url)) {
+        } elseif ($this->status_code == 1 || (property_exists($this, 'redirect_url') && isset($this->redirect_url))) {
             $this->status = Transaction::STATUS_PENDING;
         } elseif (isset($this->status_label)) {
             // TODO check why

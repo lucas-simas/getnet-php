@@ -1,6 +1,8 @@
 <?php
 namespace Getnet\API;
 
+use Getnet\API\Exception\GetnetException;
+
 /**
  * Class Credit
  *
@@ -18,6 +20,14 @@ class Credit implements \JsonSerializable
 
     // Pagamento parcelado com juros
     const TRANSACTION_TYPE_INSTALL_WITH_INTEREST = "INSTALL_WITH_INTEREST";
+
+    const COF_ONE_CLICK = 'ONE_CLICK';
+
+    const COF_ONE_CLICK_PAYMENT = 'ONE_CLICK_PAYMENT';
+
+    const COF_RECURRING = 'RECURRING';
+
+    const COF_RECURRING_PAYMENT = 'RECURRING_PAYMENT';
 
     private $authenticated;
 
@@ -38,6 +48,11 @@ class Credit implements \JsonSerializable
     private $card;
 
     private $cardholder_mobile;
+
+    // Tipo do COF (Credential On File).
+    private $credentials_on_file_type;
+    
+    private $transaction_id;
 
     /**
      *
@@ -252,4 +267,50 @@ class Credit implements \JsonSerializable
 
         return $this;
     }
+
+    /**
+     *
+     * @return mixed
+     */
+    public function getCredentialsOnFileType()
+    {
+        return $this->credentials_on_file_type;
+    }
+
+    /**
+     *
+     * @param mixed $credentials_on_file_type
+     */
+    public function setCredentialsOnFileType($credentials_on_file_type)
+    {
+        if (!in_array($credentials_on_file_type, [
+            static::COF_ONE_CLICK, static::COF_ONE_CLICK_PAYMENT, static::COF_RECURRING, static::COF_RECURRING_PAYMENT
+        ]))
+            throw new GetnetException('Escolha uma forma de recorrência válida');
+
+        $this->credentials_on_file_type = $credentials_on_file_type;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return mixed
+     */
+    public function getTransactionId()
+    {
+        return $this->transaction_id;
+    }
+
+    /**
+     *
+     * @param mixed $transaction_id
+     */
+    public function setTransactionId($transaction_id)
+    {
+        $this->transaction_id = (string) $transaction_id;
+
+        return $this;
+    }
+
 }

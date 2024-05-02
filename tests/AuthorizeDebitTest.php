@@ -4,14 +4,12 @@ namespace Tests;
 use Getnet\API\Card;
 use Getnet\API\AuthorizeResponse;
 use Getnet\API\Transaction;
+use PHPUnit\Framework\Attributes\Group;
 
 final class AuthorizeDebitTest extends TestBase
 {
 
-    /**
-     *
-     * @group e2e
-     */
+    #[Group('e2e')]
     public function testAuthorizeDebitCreate(): AuthorizeResponse
     {
         $transaction = $this->generateMockTransaction();

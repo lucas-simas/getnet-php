@@ -2,17 +2,14 @@
 namespace Tests;
 
 use Getnet\API\Transaction;
-use Getnet\API\BoletoRespose;
 use Getnet\API\PixResponse;
 use Getnet\API\PixTransaction;
+use PHPUnit\Framework\Attributes\Group;
 
 final class PixTest extends TestBase
 {
 
-    /**
-     *
-     * @group e2e
-     */
+    #[Group('e2e')]
     public function testPixCreate(): PixResponse
     {
         $transaction = new PixTransaction(20597.75);
