@@ -8,13 +8,13 @@ Todos os passos e processos referentes à integração com o sistema de captura 
 
 #### Pré-requisitos
 
-- PHP `>=7.4`
+- PHP `^8.2`
 
 #### Composer
 
 add composer.json
 ```
-"edson-nascimento/getnet-php": "^2.0"
+"edson-nascimento/getnet-php": "^3.0"
 ```
 ou execute
 ```base

@@ -4,7 +4,7 @@ namespace Getnet\API;
 trait TraitEntity
 {
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $entity = clone $this;
 
@@ -14,12 +14,8 @@ trait TraitEntity
 
         return $entity->toArray();
     }
-        
-    /**
-     *
-     * @return array
-     */
-    public function toArray()
+
+    public function toArray(): array
     {
         $vars = get_object_vars($this);
 
@@ -32,11 +28,7 @@ trait TraitEntity
         return $vars;
     }
 
-    /**
-     *
-     * @return false|string
-     */
-    public function toJSON($hiddenNull = true)
+    public function toJSON($hiddenNull = true): string|false
     {
         if ($hiddenNull) {
             return json_encode($this);
@@ -52,7 +44,7 @@ trait TraitEntity
                 $this->{$prop} = $value;
             }
         }
-        
+
         return $this;
     }
 
