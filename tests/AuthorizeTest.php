@@ -5,15 +5,15 @@ use Getnet\API\Credit;
 use Getnet\API\Card;
 use Getnet\API\AuthorizeResponse;
 use Getnet\API\Transaction;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Depends;
 
 final class AuthorizeTest extends TestBase
 {
 
     private static $CARD_TOKEN;
-    /**
-     *
-     * @group e2e
-     */
+
+    #[Group('e2e')]
     public function testAuthorizeCreate(): AuthorizeResponse
     {
         $transaction = $this->generateMockTransaction();
@@ -21,7 +21,7 @@ final class AuthorizeTest extends TestBase
 
         // Generate token card
         $tokenCard = new \Getnet\API\Token("5155901222280001", $transaction->getCustomer()->getCustomerId(), $this->getnetService());
-        
+
         self::$CARD_TOKEN = $tokenCard->getNumberToken();
 
         // Add payment
@@ -46,7 +46,7 @@ final class AuthorizeTest extends TestBase
         if (!($response instanceof AuthorizeResponse)) {
             throw new \Exception($response->getResponseJSON());
         }
-        
+
         $this->assertSame(Transaction::STATUS_APPROVED, $response->getStatus(), $response->getResponseJSON());
         $this->assertSame($transaction->getAmount(), $response->getAmount());
         $this->assertSame($transaction->getOrder()->getOrderId(), $response->getOrderId());
@@ -55,33 +55,27 @@ final class AuthorizeTest extends TestBase
         return $response;
     }
 
-    /**
-     *
-     * @group e2e
-     * @depends testAuthorizeCreate
-     */
+    #[Group('e2e')]
+    #[Depends('testAuthorizeCreate')]
     public function testAuthorizeCancel(AuthorizeResponse $response): void
     {
         $result = $this->getnetService()->authorizeCancel($response->getPaymentId(), $response->getAmount());
 
         $this->assertInstanceOf(AuthorizeResponse::class, $result);
-        $this->assertSame(Transaction::STATUS_CANCELED, $result->getStatus(),$response->getResponseJSON());
+        $this->assertSame(Transaction::STATUS_CANCELED, $result->getStatus(), $response->getResponseJSON());
         $this->assertSame($response->getAmount(), $result->getAmount());
         $this->assertSame($response->getPaymentId(), $result->getPaymentId());
     }
-    
-    /**
-     *
-     * @group e2e
-     * @depends testAuthorizeCancel
-     */
+
+    #[Group('e2e')]
+    #[Depends('testAuthorizeCancel')]
     public function testAuthorizeWithCardToken(): AuthorizeResponse
     {
         $transaction = $this->generateMockTransaction();
         $transaction->setAmount(857.96);
-        
+
         $cardToken = new \Getnet\API\Entity\CardToken(self::$CARD_TOKEN);
-        
+
         // Add payment
         $transaction->credit()
             ->setAuthenticated(false)
@@ -98,18 +92,18 @@ final class AuthorizeTest extends TestBase
             ->setExpirationYear(date('y') + 1)
             ->setCardholderName("Jax Teller")
             ->setSecurityCode("123");
-        
+
         $response = $this->getnetService()->authorize($transaction);
-        
+
         if (!($response instanceof AuthorizeResponse)) {
             throw new \Exception($response->getResponseJSON());
         }
-        
+
         $this->assertSame(Transaction::STATUS_APPROVED, $response->getStatus(), $response->getResponseJSON());
         $this->assertSame($transaction->getAmount(), $response->getAmount());
         $this->assertSame($transaction->getOrder()->getOrderId(), $response->getOrderId());
         $this->assertNotEmpty($response->getPaymentId());
-        
+
         return $response;
     }
 }

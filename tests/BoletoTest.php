@@ -4,14 +4,12 @@ namespace Tests;
 use Getnet\API\Transaction;
 use Getnet\API\BoletoRespose;
 use Getnet\API\Boleto;
+use PHPUnit\Framework\Attributes\Group;
 
 final class BoletoTest extends TestBase
 {
 
-    /**
-     *
-     * @group e2e
-     */
+    #[Group('e2e')]
     public function testBoletoCreate(): BoletoRespose
     {
         $transaction = $this->generateMockTransaction(false);

@@ -5,14 +5,13 @@ use Getnet\API\Credit;
 use Getnet\API\Card;
 use Getnet\API\AuthorizeResponse;
 use Getnet\API\Transaction;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Depends;
 
 final class AuthorizePosteriorTest extends TestBase
 {
 
-    /**
-     *
-     * @group e2e
-     */
+    #[Group('e2e')]
     public function testAuthorizePosteriorCreate(): AuthorizeResponse
     {
         $transaction = $this->generateMockTransaction();
@@ -52,11 +51,8 @@ final class AuthorizePosteriorTest extends TestBase
         return $response;
     }
 
-    /**
-     *
-     * @group e2e
-     * @depends testAuthorizePosteriorCreate
-     */
+    #[Group('e2e')]
+    #[Depends('testAuthorizePosteriorCreate')]
     public function testAuthorizePosteriorCapture(AuthorizeResponse $response): void
     {
         $result = $this->getnetService()->authorizeConfirm($response->getPaymentId(), $response->getAmount());

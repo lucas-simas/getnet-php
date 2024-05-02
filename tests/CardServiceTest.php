@@ -3,14 +3,13 @@ namespace Tests;
 
 use Getnet\API\Token;
 use Getnet\API\Card;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Depends;
 
 final class CardServiceTest extends TestBase
 {
 
-    /**
-     *
-     * @group e2e
-     */
+    #[Group('e2e')]
     public function testCardToken(): Token
     {
         $cardService = new \Getnet\API\Service\CardService($this->getnetService());
@@ -25,11 +24,8 @@ final class CardServiceTest extends TestBase
         return $cardToken;
     }
 
-    /**
-     *
-     * @group e2e
-     * @depends testCardToken
-     */
+    #[Group('e2e')]
+    #[Depends('testCardToken')]
     public function testSaveCard(Token $cardToken): void
     {
         $cardService = new \Getnet\API\Service\CardService($this->getnetService());
