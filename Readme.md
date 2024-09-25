@@ -14,7 +14,7 @@ Todos os passos e processos referentes à integração com o sistema de captura 
 
 add composer.json
 ```
-"edson-nascimento/getnet-php": "^3.0"
+"lucas-simas/getnet-php": "dev-master"
 ```
 ou execute
 ```base
