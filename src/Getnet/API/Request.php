@@ -116,67 +116,65 @@ class Request
      * @return mixed
      * @throws \Exception
      */
-    private function send(Getnet $credentials, $url_path, $method, $jsonBody = null)
-    {
-        $curl = curl_init($this->getFullUrl($url_path));
+    private function send(Getnet $credentials, $url_path, $method, $jsonBody = null) {
 
-        $defaultCurlOptions = array(
-            CURLOPT_CONNECTTIMEOUT => 60,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 60,
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json; charset=utf-8'
-            ),
-            CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_SSL_VERIFYPEER => 0
-        );
+        $curlConnection = curl_init();
+
+        //Definindo header
+        $header = [
+            "Accept: application/json", 
+            "Content-Type: application/json",
+            'Authorization: Basic '. base64_encode($credentials->getClientId() . ':' . $credentials->getClientSecret())
+        ];
 
         // Use in PIX
         if (! empty($credentials->getSellerId())) {
-            $defaultCurlOptions[CURLOPT_HTTPHEADER][] = 'seller_id: ' . $credentials->getSellerId();
+            $header[] = 'seller_id: ' . $credentials->getSellerId();
         }
 
         // Auth
         if ($method === self::CURL_TYPE_AUTH) {
-            $defaultCurlOptions[CURLOPT_HTTPHEADER][0] = 'application/x-www-form-urlencoded';
-            curl_setopt($curl, CURLOPT_USERPWD, $credentials->getClientId() . ":" . $credentials->getClientSecret());
-        } else {
-            $defaultCurlOptions[CURLOPT_HTTPHEADER][] = 'Authorization: Bearer ' . $credentials->getAuthorizationToken();
+            $header[1] = 'application/x-www-form-urlencoded';
+        } 
+        else {
+            $header[2] = 'Authorization: Bearer ' . $credentials->getAuthorizationToken();
         }
 
+        curl_setopt($curlConnection, CURLOPT_URL, $this->getFullUrl($url_path));
+        curl_setopt($curlConnection, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($curlConnection, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curlConnection, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curlConnection, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($curlConnection, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curlConnection, CURLOPT_HTTPHEADER, $header);
+
         // Add custom method
-        if (in_array($method, [
-            self::CURL_TYPE_DELETE,
-            self::CURL_TYPE_PUT
-        ])) {
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        if (in_array($method, [self::CURL_TYPE_DELETE, self::CURL_TYPE_PUT])) {
+            curl_setopt($curlConnection, CURLOPT_CUSTOMREQUEST, $method);
         }
 
         // Add body params
         if (! empty($jsonBody)) {
-            curl_setopt($curl, CURLOPT_POST, 1);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($jsonBody) ? $jsonBody : json_encode($jsonBody));
+            curl_setopt($curlConnection, CURLOPT_POST, 1);
+            curl_setopt($curlConnection, CURLOPT_POSTFIELDS, is_string($jsonBody) ? $jsonBody : json_encode($jsonBody));
         }
-
-        curl_setopt($curl, CURLOPT_ENCODING, "");
-        curl_setopt_array($curl, $defaultCurlOptions);
 
         $response = null;
         $errorMessage = '';
 
         try {
-            $response = curl_exec($curl);
+            $response = curl_exec($curlConnection);
         } catch (Exception $e) {
             throw new GetnetException("Request Exception, error: {$e->getMessage()}", 100);
         }
 
         // Verify error
         if ($response === false) {
-            $errorMessage = curl_error($curl);
+            $errorMessage = curl_error($curlConnection);
         }
 
-        $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
+        $statusCode = (int) curl_getinfo($curlConnection, CURLINFO_HTTP_CODE);
+        curl_close($curlConnection);
 
         if ($statusCode >= 400) {
             // TODO see what it means code 100

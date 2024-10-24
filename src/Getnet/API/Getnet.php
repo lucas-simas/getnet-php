@@ -17,6 +17,8 @@ class Getnet
 
     private $seller_id;
 
+    private $scope;
+
     private $environment;
 
     private $authorizationToken;
@@ -33,7 +35,7 @@ class Getnet
      * @param Environment|null $environment
      * @return Getnet
      */
-    public function __construct($client_id, $client_secret, Environment $environment = null, $keySession = null)
+    public function __construct($client_id, $client_secret, $seller_id, $scope = 'oob', Environment $environment = null, $keySession = null)
     {
         if (! $environment) {
             $environment = Environment::production();
@@ -41,6 +43,8 @@ class Getnet
 
         $this->setClientId($client_id);
         $this->setClientSecret($client_secret);
+        $this->setSellerId($seller_id);
+        $this->setScope($scope);
         $this->setEnvironment($environment);
         $this->setKeySession($keySession);
 
@@ -97,6 +101,18 @@ class Getnet
     public function setSellerId($seller_id)
     {
         $this->seller_id = (string) $seller_id;
+
+        return $this;
+    }
+
+    public function getScope()
+    {
+        return $this->scope;
+    }
+
+    public function setScope($scope)
+    {
+        $this->scope = (string) $scope;
 
         return $this;
     }
