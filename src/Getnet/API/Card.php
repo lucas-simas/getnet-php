@@ -22,8 +22,6 @@ class Card implements \JsonSerializable
 
     private $brand;
 
-    private $number;
-
     private $cardholder_name;
 
     private $expiration_month;
@@ -103,26 +101,6 @@ class Card implements \JsonSerializable
     public function setBrand($brand)
     {
         $this->brand = (string) $brand;
-
-        return $this;
-    }
-
-    /**
-     *
-     * @return mixed
-     */
-    public function getNumber()
-    {
-        return $this->number;
-    }
-
-    /**
-     *
-     * @param mixed $number
-     */
-    public function setNumber($number)
-    {
-        $this->number = (string) $number;
 
         return $this;
     }

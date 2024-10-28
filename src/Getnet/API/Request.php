@@ -159,6 +159,9 @@ class Request
             curl_setopt($curlConnection, CURLOPT_POSTFIELDS, is_string($jsonBody) ? $jsonBody : json_encode($jsonBody));
         }
 
+        //Definindo encoding
+        curl_setopt($curlConnection, CURLOPT_ENCODING, "");
+
         $response = null;
         $errorMessage = '';
 
