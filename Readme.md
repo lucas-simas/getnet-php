@@ -18,7 +18,7 @@ add composer.json
 ```
 ou execute
 ```base
-composer require edson-nascimento/getnet-php
+composer require lucas-simas/getnet-php
 ```
 #### Exemplo Autorização com cartão de crédito MasterCard R$27,50 em 2x 
 
