@@ -17,6 +17,8 @@ class Getnet
 
     private $seller_id;
 
+    private $merchant_id;
+
     private $scope;
 
     private $environment;
@@ -35,7 +37,7 @@ class Getnet
      * @param Environment|null $environment
      * @return Getnet
      */
-    public function __construct($client_id, $client_secret, $seller_id, $scope = 'oob', Environment $environment = null, $keySession = null)
+    public function __construct($client_id, $client_secret, $seller_id, $merchant_id, $scope = 'oob', Environment $environment = null, $keySession = null)
     {
         if (! $environment) {
             $environment = Environment::production();
@@ -44,6 +46,7 @@ class Getnet
         $this->setClientId($client_id);
         $this->setClientSecret($client_secret);
         $this->setSellerId($seller_id);
+        $this->setMerchantId($merchant_id);
         $this->setScope($scope);
         $this->setEnvironment($environment);
         $this->setKeySession($keySession);
@@ -101,6 +104,18 @@ class Getnet
     public function setSellerId($seller_id)
     {
         $this->seller_id = (string) $seller_id;
+
+        return $this;
+    }
+
+    public function getMerchantId()
+    {
+        return $this->merchant_id;
+    }
+
+    public function setMerchantId($merchant_id)
+    {
+        $this->merchant_id = (string) $merchant_id;
 
         return $this;
     }
@@ -419,6 +434,78 @@ class Getnet
             return $this->generateErrorResponse($e);
         }
     }
+
+    /**
+     *
+     * @return array|SubsellerResponse
+     */
+    public function createPJSubseller( PessoaJuridica $params )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->post($this, "/v1/mgm/pj/create-presubseller", $params);
+
+            $authresponse = new SubsellerResponse();
+            $authresponse->mapperJson($response);
+
+            return $response;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    /**
+     *
+     * @return array|SubsellerResponse
+     */
+    public function createPFSubseller( PessoaFisica $params )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->post($this, "/v1/mgm/pf/create-presubseller", $params);
+
+            $authresponse = new SubsellerResponse();
+            $authresponse->mapperJson($response);
+
+            return $response;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    public function complementPFSubseller( PessoaFisica $params )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->put($this, "/v1/mgm/pf/complement", $params);
+
+            $authresponse = new SubsellerResponse();
+            $authresponse->mapperJson($response);
+
+            return $response;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    public function updatePFSubseller( PessoaFisica $params )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->put($this, "/v1/mgm/pf/update-subseller", $params);
+
+            $authresponse = new SubsellerResponse();
+            $authresponse->mapperJson($response);
+
+            return $response;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
     
     public function customRequest(string $method, string $url_path, $body = null)
     {
@@ -435,6 +522,23 @@ class Getnet
     private function generateErrorResponse($e)
     {
         $error = new BaseResponse();
+        $error->mapperJson(json_decode($e->getMessage(), true));
+        
+        if (empty($error->getStatus())) {
+            $error->setStatus(Transaction::STATUS_ERROR);
+        }
+        
+        return $error;
+    }
+
+    /**
+     * 
+     * @param \Exception $e
+     * @return \Getnet\API\SubsellerResponse
+     */
+    private function generateSSErrorResponse($e)
+    {
+        $error = new SubsellerResponse();
         $error->mapperJson(json_decode($e->getMessage(), true));
         
         if (empty($error->getStatus())) {

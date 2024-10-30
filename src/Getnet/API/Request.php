@@ -56,11 +56,15 @@ class Request
             return $credentials;
         }
 
+        $scope = $credentials->getScope();
         $url_path = "/auth/oauth/v2/token";
+        if( $scope == 'mgm' ){
+            $url_path = "/credenciamento/auth/oauth/v2/token";
+        }
 
         $params = [
-            "scope" => "oob",
-            "grant_type" => "client_credentials"
+            "scope"         => $scope,
+            "grant_type"    => "client_credentials"
         ];
 
         $querystring = http_build_query($params);
@@ -127,16 +131,15 @@ class Request
             'Authorization: Basic '. base64_encode($credentials->getClientId() . ':' . $credentials->getClientSecret())
         ];
 
-        // Use in PIX
-        if (! empty($credentials->getSellerId())) {
-            $header[] = 'seller_id: ' . $credentials->getSellerId();
-        }
-
         // Auth
         if ($method === self::CURL_TYPE_AUTH) {
             $header[1] = 'application/x-www-form-urlencoded';
         } 
         else {
+            //
+            if (! empty($credentials->getSellerId())) {
+                $header[] = 'seller_id: ' . $credentials->getSellerId();
+            }
             $header[2] = 'Authorization: Bearer ' . $credentials->getAuthorizationToken();
         }
 

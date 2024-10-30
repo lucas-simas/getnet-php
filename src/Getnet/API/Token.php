@@ -22,13 +22,13 @@ class Token
      * @param string $customer_id
      * @param Getnet $credencial
      */
-    public function __construct($card_number, $customer_id, Getnet $credencial = null)
+    public function __construct($card_number, $customer_id, Getnet $credencial)
     {
         $this->setCardNumber($card_number);
         $this->setCustomerId($customer_id);
         
         if ($credencial) {
-            $this->setNumberToken($credencial);
+            $this->defineSafeCardToken($credencial);
         }
     }
 
@@ -94,10 +94,8 @@ class Token
 
     /**
      * 
-     * @deprecated
-     * Remove in next major version
      */
-    public function setNumberToken(Getnet $credencial)
+    public function defineSafeCardToken(Getnet $credencial)
     {
         $data = array(
             "card_number" => $this->card_number,

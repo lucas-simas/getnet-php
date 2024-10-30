@@ -2,7 +2,7 @@
 namespace Getnet\API;
 
 /**
- * Class Token
+ * Class Safe
  *
  * @package Getnet\API
  */
@@ -73,13 +73,12 @@ class Safe
             $this->setSecurityCode($card_info['security_code']);
         }
 
-
         if( isset($card_info['card_id']) && $card_info['card_id'] ){
-            $this->loadSafeCard($card_info, $credencial);
+            $this->loadSafeCard($credencial);
 
         }
         else {
-            $this->defineSafeCard($card_info, $credencial);
+            $this->defineSafeCard($credencial);
         }
     }
 
@@ -94,28 +93,32 @@ class Safe
 
     /**
      */
-    public function loadSafeCard($card_info, Getnet $credencial)
+    public function loadSafeCard(Getnet $credencial)
     {
-        $data = array(
-            'card_id'       => $this->card_id,
-            'customer_id'   => $this->customer_id
-        );
-
         $request = new Request($credencial);
-        $response = $request->post($credencial, "/v1/card", json_encode($data));
-        $this->number_token = $response["number_token"];
+        $response = $request->get($credencial, "/v1/cards/{$this->card_id}");
+        
+        $this->setNumberToken($response["number_token"]);
+        $this->setBrand($response["brand"]);
+        $this->setCardholderName($response["cardholder_name"]);
+        $this->setExpirationMonth($response["expiration_month"]);
+        $this->setExpirationYear($response["expiration_year"]);
+        $this->setCustomerId($response["customer_id"]);
+        $this->setCardholderIdentification($response["cardholder_identification"]);
+        $this->setVerifyCard($response["verify_card"]);
+        $this->setSecurityCode($response["security_code"]);
 
         return $this;
     }
 
     /**
      */
-    public function defineSafeCard($card_info, Getnet $credencial)
+    public function defineSafeCard(Getnet $credencial)
     {
         $data = array(
             'number_token'                  => $this->number_token,
             'brand'                         => $this->brand,
-            'cardholder_name'               => $this->cardholder_name,
+            'cardholder_name'               => substr($this->cardholder_name, 0, 25),
             'expiration_month'              => $this->expiration_month,
             'expiration_year'               => $this->expiration_year,
             'customer_id'                   => $this->customer_id,
@@ -125,8 +128,8 @@ class Safe
         );
 
         $request = new Request($credencial);
-        $response = $request->post($credencial, "/v1/card", json_encode($data));
-        $this->number_token = $response["number_token"];
+        $response = $request->post($credencial, "/v1/cards", json_encode($data));
+        $this->setCardId($response["card_id"]);
 
         return $this;
     }
