@@ -437,6 +437,23 @@ class Getnet
 
     /**
      *
+     * @return array
+     */
+    public function getPaymentPlanList()
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->get($this, "/v1/mgm/pf/consult/paymentplans/{$this->merchant_id}");
+
+            return $response;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    /**
+     *
      * @return array|SubsellerResponse
      */
     public function createPJSubseller( PessoaJuridica $params )
@@ -446,10 +463,30 @@ class Getnet
 
             $response = $request->post($this, "/v1/mgm/pj/create-presubseller", $params);
 
-            $authresponse = new SubsellerResponse();
-            $authresponse->mapperJson($response);
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
 
-            return $response;
+            return $ssresponse;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    /**
+     *
+     * @return array|SubsellerResponse
+     */
+    public function getPFSubsellerByCPF( string $cpf )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->get($this, "/v1/mgm/pf/consult/{$this->merchant_id}/{$cpf}");
+
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
+
+            return $ssresponse;
         } catch (\Exception $e) {
             return $this->generateSSErrorResponse($e);
         }
@@ -466,10 +503,10 @@ class Getnet
 
             $response = $request->post($this, "/v1/mgm/pf/create-presubseller", $params);
 
-            $authresponse = new SubsellerResponse();
-            $authresponse->mapperJson($response);
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
 
-            return $response;
+            return $ssresponse;
         } catch (\Exception $e) {
             return $this->generateSSErrorResponse($e);
         }
@@ -482,10 +519,10 @@ class Getnet
 
             $response = $request->put($this, "/v1/mgm/pf/complement", $params);
 
-            $authresponse = new SubsellerResponse();
-            $authresponse->mapperJson($response);
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
 
-            return $response;
+            return $ssresponse;
         } catch (\Exception $e) {
             return $this->generateSSErrorResponse($e);
         }
@@ -498,10 +535,10 @@ class Getnet
 
             $response = $request->put($this, "/v1/mgm/pf/update-subseller", $params);
 
-            $authresponse = new SubsellerResponse();
-            $authresponse->mapperJson($response);
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
 
-            return $response;
+            return $ssresponse;
         } catch (\Exception $e) {
             return $this->generateSSErrorResponse($e);
         }

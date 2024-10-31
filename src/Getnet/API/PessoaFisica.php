@@ -6,6 +6,7 @@ class PessoaFisica implements \JsonSerializable
     use TraitEntity;
 
     private $merchant_id;
+    private $subseller_id;
     private $legal_document_number;
     private $legal_name;
     private $birth_date;
@@ -30,6 +31,7 @@ class PessoaFisica implements \JsonSerializable
     public function __construct($data = [])
     {
         $this->merchant_id = $data['merchant_id'] ?? null;
+        $this->subseller_id = $data['subseller_id'] ?? null;
         $this->legal_document_number = $data['legal_document_number'] ?? null;
         $this->legal_name = $data['legal_name'] ?? null;
         $this->birth_date = $data['birth_date'] ?? null;
@@ -61,6 +63,15 @@ class PessoaFisica implements \JsonSerializable
     public function setMerchantId($merchant_id)
     {
         $this->merchant_id = $merchant_id;
+    }
+
+    public function getSubsellerId()
+    {
+        return $this->subseller_id;
+    }
+    public function setSubsellerId($subseller_id)
+    {
+        $this->subseller_id = $subseller_id;
     }
 
     public function getLegalDocumentNumber()

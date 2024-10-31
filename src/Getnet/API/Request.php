@@ -143,6 +143,8 @@ class Request
             $header[2] = 'Authorization: Bearer ' . $credentials->getAuthorizationToken();
         }
 
+        var_dump($this->getFullUrl($url_path));
+
         curl_setopt($curlConnection, CURLOPT_URL, $this->getFullUrl($url_path));
         curl_setopt($curlConnection, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($curlConnection, CURLOPT_TIMEOUT, 30);
@@ -170,6 +172,7 @@ class Request
 
         try {
             $response = curl_exec($curlConnection);
+            var_dump($response);
         } catch (Exception $e) {
             throw new GetnetException("Request Exception, error: {$e->getMessage()}", 100);
         }

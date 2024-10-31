@@ -16,6 +16,7 @@ class SubsellerResponse implements \JsonSerializable
     public $status_code;
     public $status_label;
     public $responseJSON;
+    public $responseArray;
 
     /**
      *
@@ -54,6 +55,7 @@ class SubsellerResponse implements \JsonSerializable
             $this->setErrorMessage($error_msg);
         }
 
+        $this->setResponseArray($json);
         $this->setResponseJSON($json);
 
         return $this;
@@ -75,6 +77,26 @@ class SubsellerResponse implements \JsonSerializable
     public function setResponseJSON($array)
     {
         $this->responseJSON = json_encode($array, JSON_PRETTY_PRINT);
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return mixed
+     */
+    public function getResponseArray()
+    {
+        return $this->responseArray;
+    }
+
+    /**
+     *
+     * @param mixed $array
+     */
+    public function setResponseArray($array)
+    {
+        $this->responseArray = $array;
 
         return $this;
     }
