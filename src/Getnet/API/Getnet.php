@@ -437,7 +437,7 @@ class Getnet
 
     /**
      *
-     * @return array
+     * @return array|SubsellerResponse
      */
     public function getPaymentPlanList()
     {
@@ -447,6 +447,26 @@ class Getnet
             $response = $request->get($this, "/v1/mgm/pf/consult/paymentplans/{$this->merchant_id}");
 
             return $response;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+     /**
+     *
+     * @return array|SubsellerResponse
+     */
+    public function getCallbackPJSubsellerByCNPJ( string $cnpj )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->get($this, "/v1/mgm/pj/callback/{$this->merchant_id}/{$cnpj}");
+
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
+
+            return $ssresponse;
         } catch (\Exception $e) {
             return $this->generateSSErrorResponse($e);
         }
@@ -522,6 +542,26 @@ class Getnet
             $request = new Request($this);
 
             $response = $request->put($this, "/v1/mgm/pj/update-subseller", $params);
+
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
+
+            return $ssresponse;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    /**
+     *
+     * @return array|SubsellerResponse
+     */
+    public function getCallbackPFSubsellerByCPF( string $cpf )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->get($this, "/v1/mgm/pf/callback/{$this->merchant_id}/{$cpf}");
 
             $ssresponse = new SubsellerResponse();
             $ssresponse->mapperJson($response);
