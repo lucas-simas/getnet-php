@@ -19,6 +19,10 @@ class Request
      */
     private $baseUrl = '';
 
+    private $raw_request = '';
+
+    private $raw_response = '';
+
     public const CURL_TYPE_AUTH = "AUTH";
 
     public const CURL_TYPE_POST = "POST";
@@ -76,7 +80,7 @@ class Request
         }
 
         $credentials->setAuthorizationToken($response["access_token"]);
-
+       
         // Save auth session
         if ($credentials->getKeySession()) {
             $response['generated'] = microtime(true);
@@ -143,8 +147,6 @@ class Request
             $header[2] = 'Authorization: Bearer ' . $credentials->getAuthorizationToken();
         }
 
-        var_dump($this->getFullUrl($url_path));
-
         curl_setopt($curlConnection, CURLOPT_URL, $this->getFullUrl($url_path));
         curl_setopt($curlConnection, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($curlConnection, CURLOPT_TIMEOUT, 30);
@@ -159,9 +161,11 @@ class Request
         }
 
         // Add body params
+        $body = null;
         if (! empty($jsonBody)) {
+            $body = is_string($jsonBody) ? $jsonBody : json_encode($jsonBody);
             curl_setopt($curlConnection, CURLOPT_POST, 1);
-            curl_setopt($curlConnection, CURLOPT_POSTFIELDS, is_string($jsonBody) ? $jsonBody : json_encode($jsonBody));
+            curl_setopt($curlConnection, CURLOPT_POSTFIELDS, $body);
         }
 
         //Definindo encoding
@@ -171,10 +175,13 @@ class Request
         $errorMessage = '';
 
         try {
+            $this->setRawRequest($this->getFullUrl($url_path), $body, $header, $method);
             $response = curl_exec($curlConnection);
-            var_dump($response);
+            $this->setRawResponse($response);
         } catch (Exception $e) {
-            throw new GetnetException("Request Exception, error: {$e->getMessage()}", 100);
+            $message = "Request Exception, error: {$e->getMessage()}";
+            $this->setRawResponse($message);
+            throw new GetnetException($message, 100);
         }
 
         // Verify error
@@ -207,6 +214,11 @@ class Request
         if (is_array($responseDecode) && isset($responseDecode['error'])) {
             throw new GetnetException($responseDecode['error_description'], 100);
         }
+
+        $responseDecode['raw_request'] = $this->getRawRequest();
+        $responseDecode['raw_response'] = $this->getRawResponse();
+
+        $credentials->setLastRequest($this);
 
         return $responseDecode;
     }
@@ -296,4 +308,53 @@ class Request
         
         return $this->send($credentials, $url_path, $method, $body);
     }
+
+    /**
+     * @return string
+     */
+    public function getRawRequest()
+    {
+        return $this->raw_request;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawResponse()
+    {
+        return $this->raw_response;
+    }
+
+    /**
+     * @param $url
+     * @param $body
+     * @param $headers
+     * @param $method
+     */
+    public function setRawRequest( $url, $body, $headers, $method )
+    {
+        if ( $method == self::CURL_TYPE_AUTH ) {
+            $method = self::CURL_TYPE_POST;
+        }
+
+        $request_string = 'Request: '.date('Y-m-d H:i:s').";";
+        $request_string .= "URL: $url; ";
+        $request_string .= "Method: $method; ";
+        $request_string .= "Headers: " . implode(", ", $headers) . "; ";
+        $request_string .= "Body: $body;";
+
+        $this->raw_request = $request_string;
+    }
+
+    /**
+     * @param $raw_response
+     */
+    public function setRawResponse($raw_response)
+    {
+        $response_string = 'Response: '.date('Y-m-d H:i:s').";";
+        $response_string .= "Body: ". json_encode($raw_response) .";";
+
+        $this->raw_response = $response_string;
+    }
+
 }

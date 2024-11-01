@@ -27,6 +27,8 @@ class Getnet
 
     private $keySession;
 
+    private Request $last_request;
+
     // TODO add monolog
     private $debug = false;
 
@@ -52,8 +54,6 @@ class Getnet
         $this->setKeySession($keySession);
 
         $request = new Request($this);
-
-        $request->auth($this);
     }
 
     /**
@@ -452,6 +452,26 @@ class Getnet
         }
     }
 
+     /**
+     *
+     * @return array|SubsellerResponse
+     */
+    public function getPJSubsellerByCNPJ( string $cnpj )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->get($this, "/v1/mgm/pj/consult/{$this->merchant_id}/{$cnpj}");
+
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
+
+            return $ssresponse;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
     /**
      *
      * @return array|SubsellerResponse
@@ -462,6 +482,46 @@ class Getnet
             $request = new Request($this);
 
             $response = $request->post($this, "/v1/mgm/pj/create-presubseller", $params);
+
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
+
+            return $ssresponse;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    /**
+     *
+     * @return array|SubsellerResponse
+     */
+    public function complementPJSubseller( PessoaJuridica $params )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->put($this, "/v1/mgm/pj/complement", $params);
+
+            $ssresponse = new SubsellerResponse();
+            $ssresponse->mapperJson($response);
+
+            return $ssresponse;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    /**
+     *
+     * @return array|SubsellerResponse
+     */
+    public function updatePJSubseller( PessoaJuridica $params )
+    {
+        try {
+            $request = new Request($this);
+
+            $response = $request->put($this, "/v1/mgm/pj/update-subseller", $params);
 
             $ssresponse = new SubsellerResponse();
             $ssresponse->mapperJson($response);
@@ -584,4 +644,23 @@ class Getnet
         
         return $error;
     }
+
+    /**
+     * 
+     * @return Request
+     */
+    public function getLastRequest()
+    {
+        return $this->last_request;
+    }
+
+    /**
+     * 
+     * @param Request $request
+     */
+    public function setLastRequest(Request $request)
+    {
+        $this->last_request = $request;
+    }
+
 }
