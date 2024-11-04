@@ -55,6 +55,10 @@ class SubsellerResponse implements \JsonSerializable
             $this->setErrorMessage($error_msg);
         }
 
+        if( isset($json['success']) ){
+            $this->setStatus('success');
+        }
+
         $this->setResponseArray($json);
         $this->setResponseJSON($json);
 

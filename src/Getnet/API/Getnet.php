@@ -437,7 +437,7 @@ class Getnet
 
     /**
      *
-     * @return array|SubsellerResponse
+     * @return array
      */
     public function getPaymentPlanList()
     {

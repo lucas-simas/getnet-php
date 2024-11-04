@@ -6,9 +6,10 @@ namespace Getnet\API;
  *
  * @package Getnet\API
  */
-class Safe
+class Safe implements \JsonSerializable
 {
-
+    use TraitEntity;
+    
     private $card_id;
 
     private $number_token;
