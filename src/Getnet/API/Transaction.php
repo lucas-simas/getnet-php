@@ -39,6 +39,8 @@ class Transaction implements \JsonSerializable
     private $device;
 
     private $shippings;
+    
+    private $marketplace_subseller_payments;
 
     private $credit;
 
@@ -229,19 +231,6 @@ class Transaction implements \JsonSerializable
 
     /**
      *
-     * @return Shipping
-     */
-    public function shipping()
-    {
-        $shipping = new Shipping();
-
-        $this->addShipping($shipping);
-
-        return $shipping;
-    }
-
-    /**
-     *
      * @param Shipping $shipping
      */
     public function addShipping(Shipping $shipping)
@@ -263,6 +252,39 @@ class Transaction implements \JsonSerializable
         $shipping = new Shipping();
 
         $this->addShipping($shipping->populateByCustomer($customer));
+
+        return $shipping;
+    }
+
+     /**
+     *
+     * @return mixed
+     */
+    public function getMarketplaceInfo()
+    {
+        return $this->marketplace_subseller_payments;
+    }
+    
+    /**
+     *
+     * @param array $shippings
+     */
+    public function setMarketplaceInfo(array $mktInfo)
+    {
+        $this->marketplace_subseller_payments = $mktInfo;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return Shipping
+     */
+    public function shipping()
+    {
+        $shipping = new Shipping();
+
+        $this->addShipping($shipping);
 
         return $shipping;
     }

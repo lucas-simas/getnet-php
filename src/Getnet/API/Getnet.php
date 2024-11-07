@@ -306,11 +306,12 @@ class Getnet
      * @param int|string $amount_val
      * @return AuthorizeResponse|BaseResponse
      */
-    public function authorizeCancel($payment_id, $amount_val)
+    public function authorizeCancel($payment_id, $amount_val = null)
     {
-        $bodyParams = array(
-            "amount" => $amount_val
-        );
+        $bodyParams = [];
+        if( $amount_val ){
+            $bodyParams['amount'] = $amount_val;
+        }
 
         try {
             if ($this->debug) {

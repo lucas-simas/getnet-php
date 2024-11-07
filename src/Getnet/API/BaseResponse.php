@@ -37,6 +37,8 @@ class BaseResponse implements \JsonSerializable
 
     public $responseJSON;
 
+    public $responseArray;
+
     public $status_label;
 
     /**
@@ -64,7 +66,23 @@ class BaseResponse implements \JsonSerializable
                 }
             });
         }
+        
+        if( isset($json['errors']) ){
+            $error_msg = '';
+            foreach( $json['errors'] as $error ){
+                if( $error_msg ){
+                    $error_msg .= '; ';
+                }
+                $error_msg .= $error;
+            }
+            $this->setErrorMessage($error_msg);
+        }
 
+        if( isset($json['success']) ){
+            $this->setStatus('success');
+        }
+
+        $this->setResponseArray($json);
         $this->setResponseJSON($json);
 
         return $this;
@@ -170,6 +188,26 @@ class BaseResponse implements \JsonSerializable
     public function setPaymentId($payment_id)
     {
         $this->payment_id = $payment_id;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return mixed
+     */
+    public function getResponseArray()
+    {
+        return $this->responseArray;
+    }
+
+    /**
+     *
+     * @param mixed $array
+     */
+    public function setResponseArray($array)
+    {
+        $this->responseArray = $array;
 
         return $this;
     }

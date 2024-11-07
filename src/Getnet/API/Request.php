@@ -167,7 +167,7 @@ class Request
             curl_setopt($curlConnection, CURLOPT_POST, 1);
             curl_setopt($curlConnection, CURLOPT_POSTFIELDS, $body);
         }
-
+        
         //Definindo encoding
         curl_setopt($curlConnection, CURLOPT_ENCODING, "");
 
