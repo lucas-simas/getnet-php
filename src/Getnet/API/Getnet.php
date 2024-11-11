@@ -338,13 +338,20 @@ class Getnet
      * @param mixed $cancel_custom_key
      * @return AuthorizeResponse|BaseResponse
      */
-    public function cancelTransaction($payment_id, $cancel_amount, $cancel_custom_key)
+    public function cancelTransaction($payment_id, $cancel_amount = null, $cancel_custom_key = null, $marketplace_subseller_payments = null )
     {
         $bodyParams = array(
             "payment_id" => $payment_id,
-            "cancel_amount" => $cancel_amount,
-            "cancel_custom_key" => $cancel_custom_key
         );
+        if(  $cancel_amount ){
+            $bodyParams['cancel_amount'] = $cancel_amount;
+        }
+        if(  $cancel_custom_key ){
+            $bodyParams['cancel_custom_key'] = $cancel_custom_key;
+        }
+        if(  $marketplace_subseller_payments ){
+            $bodyParams['marketplace_subseller_payments'] = $marketplace_subseller_payments;
+        }
 
         try {
             if ($this->debug) {
@@ -367,11 +374,19 @@ class Getnet
      *
      * @return AuthorizeResponse|BaseResponse
      */
-    public function getCancellationRequest(string $cancelRequestId)
+    public function getCancellationRequest(string $cancelRequestId = null, string $cancel_custom_key = null)
     {
+        $path = "/v1/payments/cancel/request";
+        if( $cancelRequestId ){
+            $path .= "/{$cancelRequestId}";
+        }
+        else if( $cancel_custom_key ){
+            $path .= "?cancel_custom_key={$cancel_custom_key}";
+        }
+
         try {
             $request = new Request($this);
-            $response = $request->get($this, "/v1/payments/cancel/request/" . $cancelRequestId);
+            $response = $request->get($this, $path);
             $authresponse = new AuthorizeResponse();
             $authresponse->mapperJson($response);
             
