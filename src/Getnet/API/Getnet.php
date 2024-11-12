@@ -217,6 +217,8 @@ class Getnet
      */
     public function authorize(Transaction $transaction)
     {
+        $request;
+        
         try {
             if ($this->debug) {
                 print $transaction->toJSON();
@@ -238,7 +240,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e);
+            return $this->generateErrorResponse($e, $request);
         }
     }
 
@@ -249,6 +251,8 @@ class Getnet
      */
     public function authorizeConfirm($payment_id, $amount)
     {
+        $request;
+        
         $bodyParams = array(
             'amount' => $amount
         );
@@ -266,7 +270,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e);
+            return $this->generateErrorResponse($e, $request)
         }
     }
 
@@ -278,6 +282,8 @@ class Getnet
      */
     public function authorizeConfirmDebit($payment_id, $payer_authentication_response)
     {
+        $request;
+        
         $bodyParams = array(
             "payer_authentication_response" => $payer_authentication_response
         );
@@ -295,7 +301,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e);
+            return $this->generateErrorResponse($e, $request)
         }
     }
 
@@ -308,6 +314,8 @@ class Getnet
      */
     public function authorizeCancel($payment_id, $amount_val = null)
     {
+        $request;
+        
         $bodyParams = [];
         if( $amount_val ){
             $bodyParams['amount'] = $amount_val;
@@ -326,7 +334,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e);
+            return $this->generateErrorResponse($e, $request)
         }
     }
 
@@ -340,6 +348,8 @@ class Getnet
      */
     public function cancelTransaction($payment_id, $cancel_amount = null, $cancel_custom_key = null, $marketplace_subseller_payments = null )
     {
+        $request;
+        
         $bodyParams = array(
             "payment_id" => $payment_id,
         );
@@ -365,7 +375,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e);
+            return $this->generateErrorResponse($e, $request)
         }
     }
 
@@ -376,6 +386,8 @@ class Getnet
      */
     public function getCancellationRequest(string $cancelRequestId = null, string $cancel_custom_key = null)
     {
+        $request;
+        
         $path = "/v1/payments/cancel/request";
         if( $cancelRequestId ){
             $path .= "/{$cancelRequestId}";
@@ -392,7 +404,7 @@ class Getnet
             
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e);
+            return $this->generateErrorResponse($e, $request)
         }
     }
 
@@ -403,6 +415,8 @@ class Getnet
      */
     public function boleto(Transaction $transaction)
     {
+        $request;
+
         try {
             if ($this->debug) {
                 print $transaction->toJSON();
@@ -418,7 +432,7 @@ class Getnet
 
             return $boletoresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e);
+            return $this->generateErrorResponse($e, $request)
         }
     }
 
@@ -431,6 +445,8 @@ class Getnet
      */
     public function pix(PixTransaction $pix)
     {
+        $request;
+
         try {
             if ($this->debug) {
                 print $pix->toJSON();
@@ -447,7 +463,7 @@ class Getnet
 
             return $pixResponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e);
+            return $this->generateErrorResponse($e, $request)
         }
     }
 
@@ -659,6 +675,56 @@ class Getnet
             return $this->generateSSErrorResponse($e);
         }
     }
+
+    public function generateStatement( $params )
+    {
+        try {
+            $get_params = [
+                'seller_id'                 => $this->seller_id,
+                'transaction_date_init'     => $params['transaction_date_init'],
+                'transaction_date_end'      => $params['transaction_date_end'],
+            ];
+            if( isset($params['order_id']) && $params['order_id'] ){
+                $get_params['order_id'] = $params['order_id'];
+            }
+
+            //Gerando url com os parametros
+            $url = "/v1/mgm/statement?" . http_build_query($get_params);
+
+            $request = new Request($this);
+
+            $response = $request->get($this, $url);
+
+            return $response;
+        } catch (\Exception $e) {
+            return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    public function generatePaginatedStatement( $params )
+    {
+        try {
+            $get_params = [
+                'seller_id'                 => $this->seller_id,
+            ];
+            
+            $get_params = array_merge($get_params, $params);
+
+            //Gerando url com os parametros
+            $url = "/v3/mgm/statement/paginated?" . http_build_query($get_params);
+
+            $request = new Request($this);
+
+            $response = $request->get($this, $url);
+
+            return $response;
+        } catch (\Exception $e) {
+            return [
+                'status'    => Transaction::STATUS_ERROR,
+                'message'   => $e->getMessage()
+            ];
+        }
+    }
     
     public function customRequest(string $method, string $url_path, $body = null)
     {
@@ -666,16 +732,19 @@ class Getnet
         
         return $request->custom($this, $method, $url_path, $body);
     }
-    
+
     /**
      * 
      * @param \Exception $e
      * @return \Getnet\API\BaseResponse
      */
-    private function generateErrorResponse($e)
+    private function generateErrorResponse($e, Request $request = null)
     {
         $error = new BaseResponse();
-        $error->mapperJson(json_decode($e->getMessage(), true));
+        $error_array = json_decode($e->getMessage(), true);
+        $error_array['raw_request'] = $request->getRawRequest();
+        $error_array['raw_response'] = $request->getRawResponse();
+        $error->mapperJson($error_array);
         
         if (empty($error->getStatus())) {
             $error->setStatus(Transaction::STATUS_ERROR);
