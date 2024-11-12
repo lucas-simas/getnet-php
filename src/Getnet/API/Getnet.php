@@ -270,7 +270,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e, $request)
+            return $this->generateErrorResponse($e, $request);
         }
     }
 
@@ -301,7 +301,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e, $request)
+            return $this->generateErrorResponse($e, $request);
         }
     }
 
@@ -334,7 +334,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e, $request)
+            return $this->generateErrorResponse($e, $request);
         }
     }
 
@@ -375,7 +375,7 @@ class Getnet
 
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e, $request)
+            return $this->generateErrorResponse($e, $request);
         }
     }
 
@@ -404,7 +404,7 @@ class Getnet
             
             return $authresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e, $request)
+            return $this->generateErrorResponse($e, $request);
         }
     }
 
@@ -432,7 +432,7 @@ class Getnet
 
             return $boletoresponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e, $request)
+            return $this->generateErrorResponse($e, $request);
         }
     }
 
@@ -463,7 +463,7 @@ class Getnet
 
             return $pixResponse;
         } catch (\Exception $e) {
-            return $this->generateErrorResponse($e, $request)
+            return $this->generateErrorResponse($e, $request);
         }
     }
 
