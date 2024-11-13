@@ -217,7 +217,7 @@ class Getnet
      */
     public function authorize(Transaction $transaction)
     {
-        $request;
+        $request = null;
         
         try {
             if ($this->debug) {
@@ -251,7 +251,7 @@ class Getnet
      */
     public function authorizeConfirm($payment_id, $amount)
     {
-        $request;
+        $request = null;
         
         $bodyParams = array(
             'amount' => $amount
@@ -282,7 +282,7 @@ class Getnet
      */
     public function authorizeConfirmDebit($payment_id, $payer_authentication_response)
     {
-        $request;
+        $request = null;
         
         $bodyParams = array(
             "payer_authentication_response" => $payer_authentication_response
@@ -314,7 +314,7 @@ class Getnet
      */
     public function authorizeCancel($payment_id, $amount_val = null)
     {
-        $request;
+        $request = null;
         
         $bodyParams = [];
         if( $amount_val ){
@@ -348,7 +348,7 @@ class Getnet
      */
     public function cancelTransaction($payment_id, $cancel_amount = null, $cancel_custom_key = null, $marketplace_subseller_payments = null )
     {
-        $request;
+        $request = null;
         
         $bodyParams = array(
             "payment_id" => $payment_id,
@@ -386,7 +386,7 @@ class Getnet
      */
     public function getCancellationRequest(string $cancelRequestId = null, string $cancel_custom_key = null)
     {
-        $request;
+        $request = null;
         
         $path = "/v1/payments/cancel/request";
         if( $cancelRequestId ){
@@ -415,7 +415,7 @@ class Getnet
      */
     public function boleto(Transaction $transaction)
     {
-        $request;
+        $request = null;
 
         try {
             if ($this->debug) {
@@ -445,7 +445,7 @@ class Getnet
      */
     public function pix(PixTransaction $pix)
     {
-        $request;
+        $request = null;
 
         try {
             if ($this->debug) {
@@ -785,7 +785,7 @@ class Getnet
      */
     public function setLastRequest(Request $request)
     {
-        $this->last_request = $request;
+        $this->last_request = $request = null;
     }
 
 }
