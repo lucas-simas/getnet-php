@@ -212,10 +212,10 @@ class Getnet
 
     /**
      *
-     * @param Transaction $transaction
+     * @param TransactionV2 $transaction
      * @return BaseResponse|AuthorizeResponse
      */
-    public function authorize(Transaction $transaction)
+    public function authorize(TransactionV2 $transaction)
     {
         $request = null;
         
@@ -225,15 +225,7 @@ class Getnet
             }
 
             $request = new Request($this);
-
-            $response = null;
-            if ($transaction->getCredit()) {
-                $response = $request->post($this, "/v1/payments/credit", $transaction->toJSON());
-            } elseif ($transaction->getDebit()) {
-                $response = $request->post($this, "/v1/payments/debit", $transaction->toJSON());
-            } else {
-                throw new GetnetException("Error select credit or debit");
-            }
+            $response = $request->post($this, "/v2/payments", $transaction->toJSON());
 
             $authresponse = new AuthorizeResponse();
             $authresponse->mapperJson($response);
@@ -785,7 +777,7 @@ class Getnet
      */
     public function setLastRequest(Request $request)
     {
-        $this->last_request = $request = null;
+        $this->last_request = $request;
     }
 
 }
