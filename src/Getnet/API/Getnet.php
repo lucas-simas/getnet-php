@@ -333,6 +333,49 @@ class Getnet
     /**
      * Solicita o cancelamento de transações que foram realizadas há mais de 1 dia (D+n).
      *
+     * @param mixed $idempotency_key
+     * @param mixed $cancel_amount
+     * @param mixed $cancel_custom_key
+     * @return AuthorizeResponse|BaseResponse
+     */
+    public function cancelTransactionV2($idempotency_key, $payment_id, $payment_method, $amount = null, $custom_key = null, $additional_data = null )
+    {
+        $request = null;
+        
+        $bodyParams = array(
+            "idempotency_key"   => $idempotency_key,
+            "payment_id"        => $payment_id,
+            "payment_method"    => $payment_method,
+        );
+        if(  $amount ){
+            $bodyParams['amount'] = $amount;
+        }
+        if(  $custom_key ){
+            $bodyParams['custom_key'] = $custom_key;
+        }
+        if(  $additional_data ){
+            $bodyParams['additional_data']['split']['subseller_list_payment'] = $additional_data;
+        }
+
+        try {
+            if ($this->debug) {
+                print json_encode($bodyParams);
+            }
+
+            $request = new Request($this);
+            $response = $request->post($this, "/v2/payments/cancel", json_encode($bodyParams));
+            $authresponse = new AuthorizeResponse();
+            $authresponse->mapperJson($response);
+
+            return $authresponse;
+        } catch (\Exception $e) {
+            return $this->generateErrorResponse($e, $request);
+        }
+    }
+
+    /**
+     * Solicita o cancelamento de transações que foram realizadas há mais de 1 dia (D+n).
+     *
      * @param mixed $payment_id
      * @param mixed $cancel_amount
      * @param mixed $cancel_custom_key
@@ -690,6 +733,31 @@ class Getnet
             return $response;
         } catch (\Exception $e) {
             return $this->generateSSErrorResponse($e);
+        }
+    }
+
+    public function generateV2Statement( $params )
+    {
+        try {
+            $get_params = [
+                'seller_id'                 => $this->seller_id,
+            ];
+            
+            $get_params = array_merge($get_params, $params);
+
+            //Gerando url com os parametros
+            $url = "/v2/mgm/statement?" . http_build_query($get_params);
+
+            $request = new Request($this);
+
+            $response = $request->get($this, $url);
+
+            return $response;
+        } catch (\Exception $e) {
+            return [
+                'status'    => Transaction::STATUS_ERROR,
+                'message'   => $e->getMessage()
+            ];
         }
     }
 
