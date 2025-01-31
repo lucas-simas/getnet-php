@@ -44,6 +44,17 @@ class SubsellerResponse implements \JsonSerializable
             });
         }
 
+        if( isset($json['ModelState']) ){
+            $error_msg = '';
+            foreach( $json['ModelState'] as $key => $error ){
+                if( $error_msg ){
+                    $error_msg .= '; ';
+                }
+                $error_msg .= '['.$key.'] '.$error[0];
+            }
+            $this->setErrorMessage($error_msg);
+        }
+        
         if( isset($json['errors']) ){
             $error_msg = '';
             foreach( $json['errors'] as $error ){
