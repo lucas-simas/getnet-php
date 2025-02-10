@@ -105,9 +105,15 @@ class Safe implements \JsonSerializable
         $this->setExpirationMonth($response["expiration_month"]);
         $this->setExpirationYear($response["expiration_year"]);
         $this->setCustomerId($response["customer_id"]);
-        $this->setCardholderIdentification($response["cardholder_identification"]);
-        $this->setVerifyCard($response["verify_card"]);
-        $this->setSecurityCode($response["security_code"]);
+        if( isset($response["cardholder_identification"]) && $response["cardholder_identification"] ){
+            $this->setCardholderIdentification($response["cardholder_identification"]);
+        }
+        if( isset($response["verify_card"]) && $response["verify_card"] ){
+            $this->setVerifyCard($response["verify_card"]);
+        }
+        if( isset($response["security_code"]) && $response["security_code"] ){
+            $this->setSecurityCode($response["security_code"]);
+        }
 
         return $this;
     }
