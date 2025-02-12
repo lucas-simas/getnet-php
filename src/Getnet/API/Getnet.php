@@ -741,12 +741,13 @@ class Getnet
         try {
             $get_params = [
                 'seller_id'                 => $this->seller_id,
+                'page'                      => 1,
             ];
             
             $get_params = array_merge($get_params, $params);
 
             //Gerando url com os parametros
-            $url = "/v2/mgm/statement?" . http_build_query($get_params);
+            $url = "/v2/mgm/statement/get-paginated-statement?" . http_build_query($get_params);
 
             $request = new Request($this);
 
